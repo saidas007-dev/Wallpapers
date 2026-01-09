@@ -1,0 +1,296 @@
+; ============================================================
+; Polybar config — 7 Workspaces + Full Width
+; ============================================================
+
+[bar/top]
+
+width = 100%
+height = 40
+radius = 0
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+; False = Centered in Available Space (Gaps are always equal)
+fixed-center = false
+
+background = #00000000
+foreground = #ebdbb2
+
+# Enable drawing lines (borders) on modules
+line-size = 3
+
+# Keep modules tight inside clusters
+module-margin = 0
+padding-left = 0
+padding-right = 0
+
+font-0 = "Maple Mono NF:style=Bold:size=11;3"
+font-1 = "Noto Sans:style=Bold:size=11;3"
+font-2 = "Symbols Nerd Font Mono:size=13;3"
+
+wm-restack = i3
+enable-ipc = true
+
+# ================= CLUSTER ALIGNMENT =================
+# Added 'gpu-usage' to center modules
+modules-left = launcher spaces title pinned
+modules-center = cpu gpu-usage memory date netspeed
+# REMOVED: 'battery' from this list
+modules-right = temp gpu-temp pulseaudio brightness systray media
+
+; ================= LEFT MODULES =================
+
+[module/launcher]
+type = custom/text
+format = " 󰏗 | "
+format-background = #3c3836
+format-foreground = #458588
+format-padding = 0
+# Matching Color: Teal
+format-underline = #458588
+format-overline = #458588
+click-left = /home/kanashii/.local/bin/launcher.sh
+
+[module/spaces]
+type = internal/xworkspaces
+format = <label-state>
+format-background = #3c3836
+format-suffix = " | "
+format-suffix-foreground = #b16286
+# Matching Color: Pink/Purple
+format-underline = #b16286
+format-overline = #b16286
+
+# Define 7 Workspaces
+icon-0 = 1;
+icon-1 = 2;
+icon-2 = 3;
+icon-3 = 4;
+icon-4 = 5;
+icon-5 = 6;
+icon-6 = 7;
+icon-default = 
+
+# Active: Brown (#d65d0e)
+label-active = "%icon% "
+label-active-foreground = #d65d0e
+label-active-padding = 0
+
+# Occupied: White (#ffffff)
+label-occupied = "%icon% "
+label-occupied-foreground = #ffffff
+label-occupied-padding = 0
+
+# Empty: White (#ffffff)
+label-empty = "%icon% "
+label-empty-foreground = #ffffff
+label-empty-padding = 0
+
+[module/title]
+type = internal/xwindow
+format = <label>
+format-background = #3c3836
+format-suffix = "| "
+format-suffix-foreground = #689d6a
+# Matching Color: Green
+format-underline = #689d6a
+format-overline = #689d6a
+label = "%class%"
+# Forces exactly 12 characters
+label-maxlen = 14
+label-minlen = 14
+label-alignment = center
+label-empty = " Desktop  "
+
+[module/pinned]
+type = custom/text
+
+# FIXES:
+# 1. Notion: Updated path to '/snap/bin/notion-desktop' based on your check.
+# 2. Docker: Keeps pointing to the GUI app so it opens reliably.
+# 3. Notion Icon:  (Sticky Note style)
+
+content = "  %{A1:alacritty &:} %{A}  %{A1:mintinstall &:}󰗡 %{A}  %{A1:cinnamon-settings &:} %{A}  %{A1:/opt/docker-desktop/bin/docker-desktop &:} %{A}  %{A1:/snap/bin/notion-desktop &:} %{A}  %{A1:code &:}󰨞 %{A}  %{A1:discord &:} %{A}  %{A1:flatpak run org.telegram.desktop &:} %{A}  %{A1:spotify &:} %{A}  |"
+
+content-background = #3c3836
+content-foreground = #88C0D0
+
+# Matching Color: Blue
+content-underline = #88C0D0
+content-overline = #88C0D0 
+
+cursor-click = pointer
+; ================= MIDDLE MODULES =================
+
+[module/cpu]
+type = internal/cpu
+format = <label>
+format-background = #3c3836
+format-prefix = "|  "
+format-prefix-foreground = #cc241d
+# Matching Color: Red
+format-underline = #cc241d
+format-overline = #cc241d
+label = "%percentage%% "
+
+[module/gpu-usage]
+type = custom/script
+# Queries NVIDIA GPU usage (0-100)
+exec = nvidia-smi --query-gpu=utilization.gpu --format=csv,noheader,nounits
+interval = 1
+format = <label>
+format-background = #3c3836
+# Icon: GPU Chip
+format-prefix = "| 󰢮 "
+format-prefix-foreground = #cc241d
+# Matching Color: Red (Same as CPU)
+format-underline = #cc241d
+format-overline = #cc241d
+label = "%output%% "
+
+[module/memory]
+type = internal/memory
+format = <label>
+format-background = #3c3836
+format-prefix = "|  "
+format-prefix-foreground = #cc241d
+# Matching Color: Red
+format-underline = #cc241d
+format-overline = #cc241d
+label = "%gb_used% "
+
+[module/date]
+type = internal/date
+interval = 1
+
+# %d = Day, %b = Month Name, %I = 12h Hour, %M = Minute, %p = AM/PM
+# Added '|' separator inside the first color block
+date = "%{F#d79921}|  %{F-} %d %b  %{F#d79921} %{F-} %I:%M %p"
+
+# Alt format (Year-Month-Day 24h)
+date-alt = "%{F#d79921}|  %{F-} %Y-%m-%d  %{F#d79921} %{F-} %H:%M"
+
+format = <label>
+format-background = #3c3836
+
+# Matching Color: Yellow
+format-underline = #d79921
+format-overline = #d79921
+
+label = " %date% "
+
+[module/netspeed]
+type = internal/network
+# Pointing to your active ethernet interface
+interface = enp6s0
+interval = 1.0
+accumulate-stats = true
+unknown-as-up = true
+format-connected = <label-connected>
+format-connected-background = #3c3836
+format-connected-prefix = "| "
+format-connected-prefix-foreground = #fabd2f
+format-connected-suffix = " |"
+format-connected-suffix-foreground = #fabd2f
+# Matching Color: Bright Yellow
+format-connected-underline = #fabd2f
+format-connected-overline = #fabd2f
+label-connected = "󰄝 %upspeed% 󰓅 %downspeed%"
+
+; ================= RIGHT MODULES =================
+
+[module/temp]
+type = internal/temperature
+format = <label>
+format-background = #3c3836
+format-prefix = "|  "
+format-prefix-foreground = #458588
+# Matching Color: Teal
+format-underline = #458588
+format-overline = #458588
+label = "%temperature-c% "
+
+[module/gpu-temp]
+type = custom/script
+# Queries NVIDIA GPU Temp (e.g., 45)
+exec = nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits
+interval = 1
+format = <label>
+format-background = #3c3836
+# Icon: Thermometer
+format-prefix = "|  "
+format-prefix-foreground = #458588
+# Matching Color: Teal (Same as System Temp)
+format-underline = #458588
+format-overline = #458588
+label = "%output%°C "
+
+[module/pulseaudio]
+type = internal/pulseaudio
+format-volume = <label-volume>
+format-volume-background = #3c3836
+format-volume-prefix = "|  "
+format-volume-prefix-foreground = #d65d0e
+# Matching Color: Orange
+format-volume-underline = #d65d0e
+format-volume-overline = #d65d0e
+label-volume = "%percentage%% "
+
+format-muted = "|  Muted "
+format-muted-background = #3c3836
+format-muted-foreground = #a89984
+# Matching Color: Grey (Muted)
+format-muted-underline = #a89984
+format-muted-overline = #a89984
+
+[module/brightness]
+type = custom/script
+# COMMAND: Queries ddcutil for VCP code 10 (Brightness)
+exec = ddcutil getvcp 10 --brief | awk '{print $4}'
+
+# Update interval in seconds
+interval = 2
+
+# Enable scrolling on the icon to change brightness
+scroll-up = ddcutil setvcp 10 + 10
+scroll-down = ddcutil setvcp 10 - 10
+
+format = <label>
+format-background = #3c3836
+format-prefix = "|  "
+format-prefix-foreground = #b16286
+format-suffix = " |"
+format-suffix-foreground = #b16286
+
+# Matching Color: Pink
+format-underline = #b16286
+format-overline = #b16286
+
+label = "%output%%"
+
+[module/systray]
+type = internal/tray
+format-background = #3c3836
+format-prefix = "| "
+format-prefix-foreground = #88C0D0
+# Matching Color: Blue
+format-underline = #88C0D0
+format-overline = #88C0D0
+tray-spacing = 6pt
+tray-size = 60%
+
+[module/media]
+type = custom/script
+tail = true
+interval = 1
+format-background = #3c3836
+format-underline = #b16286
+format-overline = #b16286
+format-prefix = "|  "
+format-prefix-foreground = #b16286
+exec = playerctl metadata --format "{{ title }} - {{ artist }}" 2>/dev/null | zscroll --length 25 --delay 0.3 --update-check true "playerctl metadata --format '{{ title }} - {{ artist }}'" || echo " 󰒲 󰒲 󰒲 "
+click-left = playerctl play-pause
+label = " %output% |"
+label-minlen = 16
+label-maxlen = 16
